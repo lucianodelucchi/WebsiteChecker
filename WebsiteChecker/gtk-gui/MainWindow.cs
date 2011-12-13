@@ -7,8 +7,8 @@ public partial class MainWindow
 	private global::Gtk.HBox hbox1;
 	private global::Gtk.Label lblURLs;
 	private global::Gtk.TextView txtURLs;
-	private global::Gtk.Fixed fixed2;
 	private global::Gtk.Button btnStart;
+	private global::Gtk.Button btnClear;
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
 	private global::Gtk.TreeView tvResults;
 	
@@ -45,10 +45,6 @@ public partial class MainWindow
 		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.txtURLs]));
 		w2.Position = 1;
 		// Container child hbox1.Gtk.Box+BoxChild
-		this.fixed2 = new global::Gtk.Fixed ();
-		this.fixed2.Name = "fixed2";
-		this.fixed2.HasWindow = false;
-		// Container child fixed2.Gtk.Fixed+FixedChild
 		this.btnStart = new global::Gtk.Button ();
 		this.btnStart.CanFocus = true;
 		this.btnStart.Name = "btnStart";
@@ -60,6 +56,7 @@ public partial class MainWindow
 		w4.Spacing = 2;
 		// Container child GtkHBox.Gtk.Container+ContainerChild
 		global::Gtk.Image w5 = new global::Gtk.Image ();
+		w5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-media-play", global::Gtk.IconSize.Menu);
 		w4.Add (w5);
 		// Container child GtkHBox.Gtk.Container+ContainerChild
 		global::Gtk.Label w7 = new global::Gtk.Label ();
@@ -68,20 +65,42 @@ public partial class MainWindow
 		w4.Add (w7);
 		w3.Add (w4);
 		this.btnStart.Add (w3);
-		this.fixed2.Add (this.btnStart);
-		global::Gtk.Fixed.FixedChild w11 = ((global::Gtk.Fixed.FixedChild)(this.fixed2 [this.btnStart]));
-		w11.X = 94;
-		w11.Y = 11;
-		this.hbox1.Add (this.fixed2);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.fixed2]));
-		w12.Position = 2;
-		w12.Expand = false;
-		w12.Fill = false;
+		this.hbox1.Add (this.btnStart);
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnStart]));
+		w11.Position = 2;
+		w11.Expand = false;
+		w11.Fill = false;
+		// Container child hbox1.Gtk.Box+BoxChild
+		this.btnClear = new global::Gtk.Button ();
+		this.btnClear.CanFocus = true;
+		this.btnClear.Name = "btnClear";
+		this.btnClear.UseUnderline = true;
+		// Container child btnClear.Gtk.Container+ContainerChild
+		global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+		// Container child GtkAlignment.Gtk.Container+ContainerChild
+		global::Gtk.HBox w13 = new global::Gtk.HBox ();
+		w13.Spacing = 2;
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Image w14 = new global::Gtk.Image ();
+		w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-clear", global::Gtk.IconSize.Menu);
+		w13.Add (w14);
+		// Container child GtkHBox.Gtk.Container+ContainerChild
+		global::Gtk.Label w16 = new global::Gtk.Label ();
+		w16.LabelProp = global::Mono.Unix.Catalog.GetString ("Clear");
+		w16.UseUnderline = true;
+		w13.Add (w16);
+		w12.Add (w13);
+		this.btnClear.Add (w12);
+		this.hbox1.Add (this.btnClear);
+		global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnClear]));
+		w20.Position = 3;
+		w20.Expand = false;
+		w20.Fill = false;
 		this.vbox1.Add (this.hbox1);
-		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-		w13.Position = 0;
-		w13.Expand = false;
-		w13.Fill = false;
+		global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+		w21.Position = 0;
+		w21.Expand = false;
+		w21.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -92,8 +111,8 @@ public partial class MainWindow
 		this.tvResults.Name = "tvResults";
 		this.GtkScrolledWindow.Add (this.tvResults);
 		this.vbox1.Add (this.GtkScrolledWindow);
-		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
-		w15.Position = 2;
+		global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
+		w23.Position = 2;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
@@ -103,5 +122,6 @@ public partial class MainWindow
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.btnStart.Clicked += new global::System.EventHandler (this.OnBtnStartClicked);
+		this.btnClear.Clicked += new global::System.EventHandler (this.OnBtnClearClicked);
 	}
 }

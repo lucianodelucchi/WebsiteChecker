@@ -1,12 +1,12 @@
-﻿<Properties>
+﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="WebsiteChecker" expanded="True">
-            <Option id="ShowVersionControlOverlays" value="True" />
             <Option id="ShowAllFiles" value="False" />
+            <Option id="ShowVersionControlOverlays" value="True" />
             <Node name="MainWindow.cs" selected="True" />
           </Node>
         </State>

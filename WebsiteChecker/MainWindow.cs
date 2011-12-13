@@ -18,8 +18,18 @@ public partial class MainWindow: Gtk.Window
 		this.tvResults.AppendColumn ("Timestamp", new CellRendererText (), "text", 1);
 		
 		TreeStore resultListStore = new TreeStore (typeof(string), typeof(string));
+		resultListStore.SetSortFunc (0, compareURLs);
+		resultListStore.SetSortColumnId (0, SortType.Ascending);
 		
 		this.tvResults.Model = resultListStore;
+	}
+	
+	public int compareURLs (TreeModel model, TreeIter tia, TreeIter tib)
+	{
+		string urlA = (string)model.GetValue (tia, 0);
+		string urlB = (string)model.GetValue (tib, 0);
+		
+		return urlA.CompareTo (urlB);
 	}
 	
 	protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -75,44 +85,47 @@ public partial class MainWindow: Gtk.Window
 	{
 		var urls = entries.Text.Trim ().Split ("\r\n".ToCharArray ());
 		
-		string status = string.Empty;
-		string statusDescription = string.Empty;
-		
-		HttpWebResponse response = null;
-		
 		foreach (var url in urls) {
 			
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create (url);
-			
-			try {
-				
-				response = (HttpWebResponse)request.GetResponse ();
-				status = response.StatusCode.ToString ();
-				
-			} catch (WebException ex) {
-				status = string.Empty;
-				statusDescription = ex.Message;
-			} finally { 
-				if (null != response) {
-					response.Close ();
-				}
-			}
-				
-			this.AddURL (url, string.Format ("{0} {1}", status, statusDescription).Trim());
+			request.Method = "HEAD";
+			request.BeginGetResponse (new AsyncCallback (FinishWebRequest), request);
+
 		}
 	}
 	
-	private void AddURL (string url, string status)
+	private void FinishWebRequest (IAsyncResult result)
+	{
+		string status = string.Empty;
+		string statusDescription = string.Empty;
+		Uri url = null;
+		
+		try {
+			
+			HttpWebResponse response = (result.AsyncState as HttpWebRequest).EndGetResponse (result) as HttpWebResponse;
+			status = response.StatusCode.ToString ();
+			url = response.ResponseUri;
+			
+		} catch (WebException ex) {
+			status = string.Empty;
+			url = ex.Response.ResponseUri;
+			statusDescription = ex.Message;
+		}
+		
+		this.AddURL (url, string.Format ("{0} {1}", status, statusDescription).Trim ());
+	}
+	
+	private void AddURL (Uri url, string status)
 	{
 		var resultListStore = (TreeStore)this.tvResults.Model;
 		TreeIter iter;
 		
-		var index = this.FindIterIndexByURL (url);
+		var index = this.FindIterIndexByURL (url.AbsoluteUri);
 		
 		if (-1 != index) {
 			resultListStore.GetIterFromString (out iter, index.ToString ());
 		} else {
-			iter = resultListStore.AppendValues (url);		
+			iter = resultListStore.AppendValues (url.AbsoluteUri);		
 		}
 		
 		resultListStore.AppendValues (iter, status, DateTime.Now.ToString ());
@@ -138,5 +151,11 @@ public partial class MainWindow: Gtk.Window
 		}
 		
 		return index;
+	}
+
+	protected void OnBtnClearClicked (object sender, System.EventArgs e)
+	{
+		var resultListStore = (TreeStore)this.tvResults.Model;
+		resultListStore.Clear ();
 	}
 }
