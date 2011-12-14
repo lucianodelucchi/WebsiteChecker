@@ -1,12 +1,15 @@
 ﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench ActiveDocument="WebsiteChecker\MainWindow.cs">
+    <Files>
+      <File FileName="WebsiteChecker\MainWindow.cs" Line="64" Column="3" />
+    </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
+          <Option id="ShowVersionControlOverlays" value="True" />
+          <Option id="ShowAllFiles" value="False" />
           <Node name="WebsiteChecker" expanded="True">
-            <Option id="ShowAllFiles" value="False" />
-            <Option id="ShowVersionControlOverlays" value="True" />
             <Node name="MainWindow.cs" selected="True" />
           </Node>
         </State>
@@ -17,7 +20,9 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="D:\projects\WebsiteChecker\WebsiteChecker\MainWindow.cs" line="381" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
