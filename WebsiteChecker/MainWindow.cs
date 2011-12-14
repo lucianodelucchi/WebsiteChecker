@@ -7,12 +7,19 @@ public partial class MainWindow: Gtk.Window
 {	
 	private static StatusIcon trayIcon;
 	
+	// timer
+	private static System.Timers.Timer theTimer;
+	
 	public MainWindow (): base (Gtk.WindowType.Toplevel)
 	{
 		Build ();
-		this.SetUpInterface ();	
+		this.SetUpInterface ();
+		
+		theTimer = new System.Timers.Timer ();
+		theTimer.Interval = 10000;
+		theTimer.Elapsed += HandleTheTimerElapsed;
 	}
-	
+
 	/// <summary>
 	/// Sets up interface.
 	/// </summary>
@@ -80,6 +87,8 @@ public partial class MainWindow: Gtk.Window
 		// Added because the icon wasn't removed when the application was closed
 		trayIcon.Dispose ();
 		
+		theTimer.Dispose ();
+		
 		Application.Quit ();
 		a.RetVal = true;
 	}
@@ -89,8 +98,9 @@ public partial class MainWindow: Gtk.Window
 		var valid = this.ValidateURLs (this.txtURLs.Buffer);
 		
 		if (valid) {
-			var urls = this.txtURLs.Buffer.Text.Trim ().Split ("\r\n".ToCharArray ());
-			this.CheckURLs (urls);
+			// reset the timer just in case
+			theTimer.Stop();
+			theTimer.Start();
 		}
 	}
 	
@@ -166,6 +176,9 @@ public partial class MainWindow: Gtk.Window
 		string statusDescription = string.Empty;
 		Uri url = null;
 		
+		
+		//theTimer.Stop ();
+		
 		try {
 			// Get the request from the parameter
 			HttpWebRequest request = (result.AsyncState as HttpWebRequest);
@@ -180,12 +193,15 @@ public partial class MainWindow: Gtk.Window
 			if (ex.Response != null) {
 				status = ((HttpWebResponse)ex.Response).StatusCode.ToString ();
 				statusDescription = ((HttpWebResponse)ex.Response).StatusDescription;
+				ex.Response.Close ();
 			}
 			
 		}
 		
 		// Log the result in the TreeView
 		this.AddURL (url, string.Format ("{0} {1}", status, statusDescription).Trim ());
+		
+		//theTimer.Start ();
 	}
 	
 	
@@ -252,9 +268,19 @@ public partial class MainWindow: Gtk.Window
 	/// </summary>
 	protected void OnBtnClearClicked (object sender, System.EventArgs e)
 	{
+		theTimer.Stop();
+		
 		var resultListStore = (TreeStore)this.tvResults.Model;
 		resultListStore.Clear ();
+		
+		theTimer.Start();
 	}
 
-
+	void HandleTheTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
+	{
+		theTimer.Stop ();
+		var urls = this.txtURLs.Buffer.Text.Trim ().Split ("\r\n".ToCharArray ());
+		this.CheckURLs (urls);
+		theTimer.Start ();
+	}
 }
