@@ -99,8 +99,10 @@ public partial class MainWindow: Gtk.Window
 		
 		if (valid) {
 			// reset the timer just in case
-			theTimer.Stop();
+			theTimer.Stop ();
 			theTimer.Start();
+			var urls = this.txtURLs.Buffer.Text.Trim ().Split ("\r\n".ToCharArray ());
+			this.CheckURLs (urls);
 		}
 	}
 	
@@ -159,8 +161,8 @@ public partial class MainWindow: Gtk.Window
 			// Set method to HEAD to get only the headers
 			request.Method = "HEAD";
 			// Make an asynchronous call to get the response passing the request as an additional parameter
-			request.BeginGetResponse (new AsyncCallback (FinishWebRequest), request);
-
+			IAsyncResult result = (IAsyncResult)request.BeginGetResponse (new AsyncCallback (FinishWebRequest), request);
+			
 		}
 	}
 	
@@ -176,15 +178,13 @@ public partial class MainWindow: Gtk.Window
 		string statusDescription = string.Empty;
 		Uri url = null;
 		
-		
-		//theTimer.Stop ();
-		
 		try {
 			// Get the request from the parameter
-			HttpWebRequest request = (result.AsyncState as HttpWebRequest);
+			HttpWebRequest request = (HttpWebRequest)result.AsyncState;
 			url = request.RequestUri;
-			HttpWebResponse response = request.EndGetResponse (result) as HttpWebResponse;
+			HttpWebResponse response = (HttpWebResponse)request.EndGetResponse (result);
 			status = response.StatusCode.ToString ();
+			response.Close ();
 			
 		} catch (WebException ex) {
 			status = string.Empty;
@@ -200,8 +200,7 @@ public partial class MainWindow: Gtk.Window
 		
 		// Log the result in the TreeView
 		this.AddURL (url, string.Format ("{0} {1}", status, statusDescription).Trim ());
-		
-		//theTimer.Start ();
+		return;
 	}
 	
 	
@@ -278,9 +277,7 @@ public partial class MainWindow: Gtk.Window
 
 	void HandleTheTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
 	{
-		theTimer.Stop ();
 		var urls = this.txtURLs.Buffer.Text.Trim ().Split ("\r\n".ToCharArray ());
 		this.CheckURLs (urls);
-		theTimer.Start ();
 	}
 }
