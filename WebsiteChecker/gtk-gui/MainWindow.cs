@@ -148,6 +148,7 @@ public partial class MainWindow
 		this.tvResults = new global::Gtk.TreeView ();
 		this.tvResults.CanFocus = true;
 		this.tvResults.Name = "tvResults";
+		this.tvResults.RulesHint = true;
 		this.GtkScrolledWindow.Add (this.tvResults);
 		this.vbox1.Add (this.GtkScrolledWindow);
 		global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));

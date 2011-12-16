@@ -16,7 +16,7 @@ public partial class MainWindow: Gtk.Window
 		this.SetUpInterface ();
 		
 		theTimer = new System.Timers.Timer ();
-		theTimer.Interval = 10000;
+		theTimer.Interval = 1000;
 		theTimer.Elapsed += HandleTheTimerElapsed;
 	}
 	
@@ -287,6 +287,30 @@ public partial class MainWindow: Gtk.Window
 		Gdk.PixbufAnimation pba = Gdk.PixbufAnimation.LoadFromResource ("WebsiteChecker.ajax-loader.gif");
 		this.imgLoading.PixbufAnimation = pba;
 		
+		this.tvResults.Model.RowInserted += HandleTvResultsModelhandleRowInserted;
+	}
+
+	void HandleTvResultsModelhandleRowInserted (object o, RowInsertedArgs args)
+	{
+		var resultListStore = (TreeStore)this.tvResults.Model;
+		TreeIter parent;
+		resultListStore.IterParent (out parent, args.Iter);
+		
+		if (5 < resultListStore.IterNChildren (parent)) {
+			theTimer.Stop ();
+			TreeIter iterChild;
+			resultListStore.IterChildren (out iterChild, parent);
+			try {
+				while (resultListStore.IterIsValid(iterChild)) {
+					resultListStore.Remove (ref iterChild);
+				}
+			} catch (Exception ex) {
+				Console.WriteLine (ex.Message);
+			}
+			
+			theTimer.Start ();
+		}
+	
 	}
 	
 	/// <summary>
@@ -319,6 +343,7 @@ public partial class MainWindow: Gtk.Window
 		
 		resultListStore.AppendValues (iter, string.Format ("{0} {1} {2}", status.ToString (), exceptionStatus.ToString (), statusDescription).Trim (), DateTime.Now.ToString ());
 		this.tvResults.Model = resultListStore;
+		
 	}
 	
 	private void ShowStop (bool show)
