@@ -2,13 +2,16 @@ using System;
 using System.Text.RegularExpressions;
 using Gtk;
 using System.Net;
+using System.Threading;
 
 public partial class MainWindow: Gtk.Window
-{	
+{		
 	private static StatusIcon trayIcon;
 	
 	// timer
 	private static System.Timers.Timer theTimer;
+	
+	public static ManualResetEvent allDone = new ManualResetEvent (false);
 	
 	public MainWindow (): base (Gtk.WindowType.Toplevel)
 	{
@@ -16,7 +19,7 @@ public partial class MainWindow: Gtk.Window
 		this.SetUpInterface ();
 		
 		theTimer = new System.Timers.Timer ();
-		theTimer.Interval = 1000;
+		theTimer.Interval = WebsiteChecker.Configuration.DefaulTimerInterval;
 		theTimer.Elapsed += HandleTheTimerElapsed;
 	}
 	
@@ -31,12 +34,15 @@ public partial class MainWindow: Gtk.Window
 		foreach (var url in urls) {
 			
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create (url);
-			// Set method to HEAD to get only the headers
+			// Set method to HEAD to get only the headers in the response
 			request.Method = "HEAD";
 			this.imgLoading.Visible = true;
 			// Make an asynchronous call to get the response passing the request as an additional parameter
 			IAsyncResult result = (IAsyncResult)request.BeginGetResponse (new AsyncCallback (FinishWebRequest), request);
-			
+			// this line implements the timeout, if there is a timeout, the callback fires and the request becomes aborted
+			// check http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.begingetresponse.aspx
+			ThreadPool.RegisterWaitForSingleObject (result.AsyncWaitHandle, new WaitOrTimerCallback (TimeoutCallback), request, WebsiteChecker.Configuration.DefaultTimeout, true);
+			allDone.WaitOne ();
 		}
 	}
 	
@@ -78,7 +84,7 @@ public partial class MainWindow: Gtk.Window
 		
 		// Log the result in the TreeView
 		this.AddURL (url, status, exceptionStatus, statusDescription);
-		return;
+		allDone.Set ();
 	}
 		
 #region Auxiliary Methods
@@ -177,6 +183,16 @@ public partial class MainWindow: Gtk.Window
 		return index;
 	}
 	
+ 	// Abort the request if the timer fires.
+	private void TimeoutCallback (object state, bool timedOut)
+	{ 
+		if (timedOut) {
+			HttpWebRequest request = state as HttpWebRequest;
+			if (request != null) {
+				request.Abort ();
+			}
+		}
+	}
 #endregion
 
 #region Events
@@ -242,6 +258,31 @@ public partial class MainWindow: Gtk.Window
 		this.ShowStart ();
 	}
 	
+	void HandleTvResultsModelhandleRowInserted (object o, RowInsertedArgs args)
+	{
+		var resultListStore = (TreeStore)this.tvResults.Model;
+		TreeIter parent;
+		resultListStore.IterParent (out parent, args.Iter);
+		
+		if (WebsiteChecker.Configuration.DefaulURLRowLimit < resultListStore.IterNChildren (parent)) {
+			theTimer.Stop ();
+			TreeIter iterChild;
+			resultListStore.IterChildren (out iterChild, parent);
+			try {
+				// should be done with a while, but I was getting an error/exception 
+				// and was not being caught in the catch
+				for (int i = 0; i < 5; i++) {
+					resultListStore.Remove (ref iterChild);
+				}
+			} catch (Exception ex) {
+				
+			}
+			
+			theTimer.Start ();
+		}
+	
+	}
+	
 #endregion
 	
 #region Interface Related
@@ -290,28 +331,7 @@ public partial class MainWindow: Gtk.Window
 		this.tvResults.Model.RowInserted += HandleTvResultsModelhandleRowInserted;
 	}
 
-	void HandleTvResultsModelhandleRowInserted (object o, RowInsertedArgs args)
-	{
-		var resultListStore = (TreeStore)this.tvResults.Model;
-		TreeIter parent;
-		resultListStore.IterParent (out parent, args.Iter);
-		
-		if (5 < resultListStore.IterNChildren (parent)) {
-			theTimer.Stop ();
-			TreeIter iterChild;
-			resultListStore.IterChildren (out iterChild, parent);
-			try {
-				while (resultListStore.IterIsValid(iterChild)) {
-					resultListStore.Remove (ref iterChild);
-				}
-			} catch (Exception ex) {
-				Console.WriteLine (ex.Message);
-			}
-			
-			theTimer.Start ();
-		}
-	
-	}
+
 	
 	/// <summary>
 	/// Logs the URL in the TreeView.

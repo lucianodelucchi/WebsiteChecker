@@ -2,16 +2,14 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.Workbench ActiveDocument="WebsiteChecker\MainWindow.cs">
     <Files>
-      <File FileName="WebsiteChecker\MainWindow.cs" Line="294" Column="19" />
+      <File FileName="WebsiteChecker\MainWindow.cs" Line="314" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Option id="ShowVersionControlOverlays" value="True" />
+        <State expanded="True" selected="True">
           <Option id="ShowAllFiles" value="False" />
-          <Node name="WebsiteChecker" expanded="True">
-            <Node name="MainWindow.cs" selected="True" />
-          </Node>
+          <Option id="ShowVersionControlOverlays" value="True" />
+          <Node name="WebsiteChecker" expanded="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">
@@ -20,9 +18,7 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="D:\projects\WebsiteChecker\WebsiteChecker\MainWindow.cs" line="489" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
