@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebsiteChecker", "WebsiteChecker\WebsiteChecker.csproj", "{E6F707DC-738B-4979-8BCC-09889350C0CE}"
 EndProject
 Global
